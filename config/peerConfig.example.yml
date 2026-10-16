@@ -1,0 +1,56 @@
+# Interstellar Server — peerConfig.yml
+#
+# 把本文件重命名为 peerConfig.yml 后按需修改。
+# 路径默认为 ./config/peerConfig.yml，可用 -config 参数或 PEER_CONFIG 环境变量覆盖。
+#
+# 与原版 TS 服务器的区别：
+#   1. iceServers 每一项支持新增的 region 字段（会原样透传给客户端）。
+#   2. 缺省字段与默认值合并（原版 TS 一旦写了本文件就整体替换，缺 integratedRelay 会崩溃）。
+#   3. 集成 TURN 使用 Pion TURN 实现（替代 node-turn），externalIps 为空时自动探测公网 IP。
+#   4. 修复了原版 join_lobby 回调可能被触发两次的问题。
+
+# 强制所有客户端只走 TURN 中继（保护玩家 IP，牺牲延迟）。
+# 为 true 时至少要配置一个 TURN（iceServers 或集成 TURN 二选一）。
+forceRelayOnly: false
+
+# 内置 TURN 服务器（Pion TURN）。
+integratedRelay:
+  enabled: false
+  #relayIps: ['192.0.2.1']
+  #listeningIps: ['0.0.0.0']
+  #externalIps: ['192.0.2.1']   # SNAT 后必须填公网 IP；留空则自动探测
+  minPort: 49152
+  maxPort: 65535
+  listeningPort: 3478
+  # 可选值: OFF, FATAL, ERROR, WARN, INFO, DEBUG, TRACE, ALL
+  debugLevel: 'INFO'
+  defaultUsername: 'please_change_me'
+  defaultPassword: 'please_change_me_too'
+
+# 自定义 STUN/TURN 服务器列表。
+#
+# ★ region 字段（本 Go 版新增）：
+#   自由文本标签（如 cn / hk / jp），服务器原样透传给客户端。
+#   客户端可以利用它实现"按延迟自动选 TURN"或"用户手动选节点"：
+#     - 自动模式：客户端对每个带 region 的 TURN 做一次 relay 候选探测，
+#       按 RTT 排序后只把最快的 1-2 个交给 WebRTC；
+#     - 手动模式：客户端把用户选择的 region 过滤进 iceServers 数组。
+#   注意：WebRTC 自身不做延迟选路，排序/过滤必须在客户端完成。
+#   列表顺序 = relay 候选优先级（TURN 之间第一个优先级最高），STUN 顺序无意义。
+iceServers:
+  - urls: 'stun:stun.miwifi.com:3478'
+    region: 'cn'        # STUN 的 region 仅作分组标记，WebRTC 不区分
+  - urls: 'stun:stun.l.google.com:19302'
+  # ---- TURN 示例（建议至少配一个与服务器同机/同区域的）----
+  # - urls: 'turn:cn.example.com:3478'
+  #   username: 'TurnUsername'
+  #   credential: 'TurnPassword'
+  #   region: 'cn'      # ← 客户端选路用
+  # - urls: 'turn:hk.example.com:3478'
+  #   username: 'TurnUsername'
+  #   credential: 'TurnPassword'
+  #   region: 'hk'
+  # - urls: 'turns:hk.example.com:443?transport=tcp'   # TLS 逃生通道（UDP 被封时用）
+  #   username: 'TurnUsername'
+  #   credential: 'TurnPassword'
+  #   region: 'hk'

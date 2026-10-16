@@ -1,0 +1,22 @@
+forceRelayOnly: false
+integratedRelay:
+  enabled: true
+  listeningIps: ['0.0.0.0']
+  externalIps: ['192.168.110.76']
+  minPort: 49152
+  maxPort: 49200
+  listeningPort: 3478
+  debugLevel: 'TRACE'
+  defaultUsername: 'testuser'
+  defaultPassword: 'testpass'
+iceServers:
+  - urls: 'stun:stun.miwifi.com:3478'
+    region: 'cn'
+  - urls: 'turn:cn.example.com:3478'
+    username: 'cnuser'
+    credential: 'cnpass'
+    region: 'cn'
+  - urls: ['turn:hk.example.com:3478', 'turn:hk.example.com:3478?transport=tcp']
+    username: 'hkuser'
+    credential: 'hkpass'
+    region: 'hk'
