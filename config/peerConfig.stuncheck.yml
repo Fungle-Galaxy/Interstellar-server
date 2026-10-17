@@ -1,0 +1,14 @@
+forceRelayOnly: false
+
+integratedRelay:
+  enabled: true
+  listeningIps: ['0.0.0.0']
+  externalIps: ['127.0.0.1']
+  minPort: 49152
+  maxPort: 49255
+  listeningPort: 3478
+  debugLevel: 'INFO'
+  defaultUsername: 'u1'
+  defaultPassword: 'p1'
+
+iceServers: []

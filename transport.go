@@ -448,8 +448,13 @@ func (m *Manager) handleWS(w http.ResponseWriter, r *http.Request) {
 		}
 		sess.cond.Broadcast()
 	}
-	conn.SetReadDeadline(time.Now().Add(pingIntervalV3 + pingTimeoutV3))
+	// Refresh the read deadline before every read: it tracks the heartbeat
+	// (EIO=3 clients ping us, EIO=4 we ping them), not a one-shot window.
+	// Setting it once here used to hard-drop every websocket session after
+	// exactly 30s no matter how much traffic flowed — the client saw an
+	// abrupt "closed without completing the close handshake" every 30s.
 	for {
+		conn.SetReadDeadline(time.Now().Add(pingIntervalV3 + pingTimeoutV3))
 		_, data, err := conn.ReadMessage()
 		if err != nil {
 			sess.Close()

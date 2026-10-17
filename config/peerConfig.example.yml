@@ -41,6 +41,7 @@ iceServers:
   - urls: 'stun:stun.miwifi.com:3478'
     region: 'cn'        # STUN 的 region 仅作分组标记，WebRTC 不区分
   - urls: 'stun:stun.l.google.com:19302'
+    region: 'de'        # 谷歌 STUN（BCL 官方默认；大陆不可达，会让国内玩家 gathering 多等几秒，介意可删）
   # ---- TURN 示例（建议至少配一个与服务器同机/同区域的）----
   # - urls: 'turn:cn.example.com:3478'
   #   username: 'TurnUsername'
@@ -54,3 +55,9 @@ iceServers:
   #   username: 'TurnUsername'
   #   credential: 'TurnPassword'
   #   region: 'hk'
+  # ---- BCL 官方德国 TURN（凭证硬编码在开源客户端里=公开，仅作容灾兜底）----
+  # 注意：国内实测中继往返约 436ms，务必放在列表最后（位置=最低优先级）。
+  # - urls: 'turn:turn.bettercrewl.ink:3478'
+  #   username: 'M9DRVaByiujoXeuYAAAG'
+  #   credential: 'TpHR9HQNZ8taxjb3'
+  #   region: 'de'
